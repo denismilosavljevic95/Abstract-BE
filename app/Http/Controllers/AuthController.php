@@ -43,10 +43,10 @@ class AuthController extends Controller
 
     public function login(Request $request) {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string',
+            'username' => 'required|string',
             'password' => 'required|string'
-          ]);
-          
+        ]);
+
         if ($validator->fails()) {
             return response([
                 'message' => 'Not correct inputs'
@@ -54,7 +54,9 @@ class AuthController extends Controller
         }
         $fields = $request->all();
 
-        $user = User::where('email', $fields['email'])->first();
+        $fieldType = filter_var($fields['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';  
+
+        $user = User::where($fieldType, $fields['username'])->first();
 
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             return response([
