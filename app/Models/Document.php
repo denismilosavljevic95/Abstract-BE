@@ -16,6 +16,8 @@ class Document extends Model
      */
     protected $fillable = [
         'fileName',
+        'filePath',
+        'zipPath',
         'user_id'
     ];
 

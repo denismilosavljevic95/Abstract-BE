@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Document;
 use App\Models\User;
-use League\Flysystem\File;
+use App\Models\Document;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
@@ -24,26 +21,41 @@ class DocumentController extends Controller
     
     public function create(Request $request): array {
         $user = Auth::user();
+
         $name = $request->input('name');
         $document = $request->file('document');
+
         $documentFullName = $document->getClientOriginalName();
-        $documentName = pathinfo($documentFullName, PATHINFO_FILENAME);
+        if (empty($name)) {
+            $documentName = pathinfo($documentFullName, PATHINFO_FILENAME);
+        } else {
+            $documentName = $name;
+        }
         $documentExtension = pathinfo($documentFullName, PATHINFO_EXTENSION);
-        $document = Document::create([
-            'fileName' => $documentFullName,
+        $filePath = $documentName . '.' . $documentExtension;
+
+        if (file_exists(public_path('assets/' . $filePath))) {
+            return ['message' => 'File already exist!'];
+        }
+
+        $documentObj = Document::create([
+            'fileName' => $documentName,
+            'filePath' => $filePath,
+            'zipPath' => $filePath,
             'user_id' => $user['id']
         ]);
-        Log::debug($name);
-        Storage::disk('local')->put($documentFullName, file_get_contents($document));
+
+        $document->move('assets',$filePath);
+        
         return [
-            'Document' => $document
+            'Document' => $documentObj
         ];
     }
 
     public function readOne(Request $request): array {
         $documentID = $request->get('id');
         $userID = Auth::user()['id'];
-        $document = Document::where('id', '=', $documentID)->where('user_id', '=', $userID)->get();
+        $document = Document::where('id', '=', $documentID)->where('user_id', '=', $userID)->first();
         return [
             'document' => $document
         ];
@@ -52,9 +64,18 @@ class DocumentController extends Controller
     public function delete(Request $request): array {
         $documentID = $request->get('id');
         $userID = Auth::user()['id'];
+        $file_path = Document::where('id', '=', $documentID)->where('user_id', '=', $userID)->first()['filePath'];
         $document = Document::where('id', '=', $documentID)->where('user_id', '=', $userID)->delete();
+        unlink(public_path('assets/' . $file_path));
         return [
             'message' => $document
         ];
+    }
+
+    public function download(Request $request) {
+        $documentID = $request->get('id');
+        $userID = Auth::user()['id'];
+        $document = Document::where('id', '=', $documentID)->where('user_id', '=', $userID)->first();
+        return response()->download(public_path('assets/' . $document['filePath']));
     }
 }

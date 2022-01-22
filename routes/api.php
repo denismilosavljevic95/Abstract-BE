@@ -25,7 +25,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/documents', [DocumentController::class, 'readAll']);
+
     Route::get('/document', [DocumentController::class, 'readOne']);
     Route::post('/document', [DocumentController::class, 'create']);
     Route::delete('/document', [DocumentController::class, 'delete']);
+
+    Route::get('/document/download', [DocumentController::class, 'download']);
 });
