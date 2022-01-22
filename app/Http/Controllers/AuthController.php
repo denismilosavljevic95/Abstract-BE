@@ -6,15 +6,25 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function register(Request $request) {
-        $fields = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string'
         ]);
+
+        if ($validator->fails()) {
+            return response([
+                'message' => 'Not correct inputs'
+            ], 400);
+        }
+
+        $fields = $request->all();
+
         $user = User::create([
             'name' => $fields['name'],
             'email' => $fields['email'],
@@ -32,10 +42,17 @@ class AuthController extends Controller
     }
 
     public function login(Request $request) {
-        $fields = $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|string',
             'password' => 'required|string'
-        ]);
+          ]);
+          
+        if ($validator->fails()) {
+            return response([
+                'message' => 'Not correct inputs'
+            ], 400);
+        }
+        $fields = $request->all();
 
         // Check email
         $user = User::where('email', $fields['email'])->first();
@@ -43,7 +60,7 @@ class AuthController extends Controller
         // Check password
         if(!$user || !Hash::check($fields['password'], $user->password)) {
             return response([
-                'message' => 'Bad creds'
+                'message' => 'Bad credentials'
             ], 401);
         }
 
