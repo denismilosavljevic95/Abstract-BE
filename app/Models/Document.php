@@ -18,7 +18,8 @@ class Document extends Model
         'fileName',
         'filePath',
         'zipPath',
-        'user_id'
+        'user_id',
+        'archive'
     ];
 
     public function owner()

@@ -68,12 +68,8 @@ class DocumentController extends Controller
     public function delete(Request $request): array {
         $documentID = $request->get('id');
         $userID = Auth::user()['id'];
-        $file_path = Document::where('id', '=', $documentID)->where('user_id', '=', $userID)->first()['filePath'];
-        $document = Document::where('id', '=', $documentID)->where('user_id', '=', $userID)->delete();
-        unlink(public_path('assets/' . $file_path));
-        return [
-            'message' => $document
-        ];
+        Document::where('id', '=', $documentID)->where('user_id', '=', $userID)->update(['archive' => 1]);
+        return ['message' => 'Successfuly deleted!'];
     }
 
     public function download(Request $request) {

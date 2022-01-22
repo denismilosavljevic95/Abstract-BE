@@ -19,6 +19,7 @@ class CreateDocumentsTable extends Migration
             $table->string('filePath');
             $table->string('zipPath');
             $table->unsignedBigInteger('user_id');
+            $table->boolean('archive')->default(false);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
