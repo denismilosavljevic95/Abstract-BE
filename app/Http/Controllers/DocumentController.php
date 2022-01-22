@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Document;
+use App\Jobs\ZipDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,7 +46,9 @@ class DocumentController extends Controller
             'user_id' => $user['id']
         ]);
 
-        $document->move('assets',$filePath);
+        $document->move('assets', $filePath);
+
+        ZipDocument::dispatch($name, $filePath);
         
         return [
             'Document' => $documentObj
