@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
+            'username' => 'required|string|unique:users,username',
             'email' => 'required|string|unique:users,email',
             'password' => 'required|string'
         ]);
@@ -26,7 +26,7 @@ class AuthController extends Controller
         $fields = $request->all();
 
         $user = User::create([
-            'name' => $fields['name'],
+            'username' => $fields['username'],
             'email' => $fields['email'],
             'password' => bcrypt($fields['password'])
         ]);
