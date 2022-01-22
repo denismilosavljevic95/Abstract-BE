@@ -34,6 +34,7 @@ class DocumentController extends Controller
         }
         $documentExtension = pathinfo($documentFullName, PATHINFO_EXTENSION);
         $filePath = $documentName . '.' . $documentExtension;
+        $zipPath = $documentName . '.zip';
 
         if (file_exists(public_path('assets/' . $filePath))) {
             return ['message' => 'File already exist!'];
@@ -42,7 +43,7 @@ class DocumentController extends Controller
         $documentObj = Document::create([
             'fileName' => $documentName,
             'filePath' => $filePath,
-            'zipPath' => $filePath,
+            'zipPath' => $zipPath,
             'user_id' => $user['id']
         ]);
 
