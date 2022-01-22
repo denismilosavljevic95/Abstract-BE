@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::get('/document', [DocumentController::class, 'readOne']);
     Route::post('/document', [DocumentController::class, 'create']);
+    Route::patch('/document', [DocumentController::class, 'update']);
     Route::delete('/document', [DocumentController::class, 'delete']);
 
     Route::get('/document/download', [DocumentController::class, 'download']);

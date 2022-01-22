@@ -41,10 +41,10 @@ class DocumentDelete extends Command
     {
         $documents = Document::where('archive', '=', 1)->get();
         foreach($documents as $value) {
-            if (file_exists(public_path('assets/' . $value['filePath']))) {
+            if ($value['filePath'] && file_exists(public_path('assets/' . $value['filePath']))) {
                 unlink(public_path('assets/' . $value['filePath']));
             }
-            if (file_exists(public_path('assets/' . $value['zipPath']))) {
+            if ($value['zipPath'] && file_exists(public_path('assets/' . $value['zipPath']))) {
                 unlink(public_path('assets/' . $value['zipPath']));
             }
         }
