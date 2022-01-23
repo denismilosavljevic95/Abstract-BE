@@ -23,3 +23,9 @@ Create default user
 
 #### php artisan serve
 Start project
+
+#### crontab -e
+```
+* * * * * cd /project/path && php artisan schedule:ru>
+```
+change /project/path with your project path 
