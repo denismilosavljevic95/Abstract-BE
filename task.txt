@@ -1,0 +1,17 @@
+Zadatak je da se napravi jednostavan sistem za upravljanje sa fajlovima, odnosno da korisnik moze da dodaje svoje fajlove na sistem i da iste po potrebi pregleda/preuzme. Ne postoji mogucnost kreiranje foldera, ideja je da bude bude jednostavno.
+
+Spisak zahteva:
+Omoguciti korisniku da moze da se uloguje sa kombinacijom email:password ili username:password (ukoliko se koristi Laravel, preporuka je da se koristi vec gotov sistem od Laravela za auth)
+Napraviti seeder koji ce kreirati prvog korisnika sa podacima: email: admin@example.com, username: admin, password: superadmin
+Tabele kreirati kroz migracije
+Ukoliko se koristi Laravel, preporuka je da se koristiti Filesystem od Laravela
+Prilikom dodavanja fajla na sistem, korisnik moze da izabere fajl i da kreira ime za fajl, a ukoliko korisnik ne unese ime, default ime ostaje ime fajla
+Prilikom svakog dodavanja fajla je potrebno da se kopija tog fajla zipuje, tako da u svakom trenutku imamo fajl koji je zipovan i raw fajl, odnosno onakav kakav je uploadovan.
+Preporuka je da se koristi queue, odnosno da se ne blokira http zahtev dok se ceka da se zipuje fajl. 
+Korisnik kad je ulogovan ima mogucnost da vidi i pristupi samo svojim fajlovima (ime fajla, putanju do raw fajla, putanju do zip fajla), odnosno ima mogucnost za CRUD operacije.
+Ukoliko je zip fajl kreiran, omoguciti korisniku da zastiti ZIP fajl lozinkom.
+Korisnik ima mogucnost da uploaduje bilo koju vrstu fajla (png, jpeg, pdf, mp4, php, java, …)
+Ukoliko korisnik obrise fajl, radimo soft-delete u bazi i ne brisemo odmah fajlove sa fajl sistema, to ostavljamo za task scheduler / cron, da ih obrise svakog dana u 02h ujutru.
+Odraditi ovo kroz NodeJS ili kroz PHP / Laravel.
+
+Sto se tice UI, na to nema potrebe da obracati paznju, dovoljno je spakovati neki bootstrap, ali isto tako moze ovo da de uradi da bude REST API i da nema uopste UI.
