@@ -2,8 +2,9 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -27,32 +28,14 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-     /**
-     * Register the exception handling callbacks for the application.
-     *
-     * @return void
-     */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            return false;
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Route does not exist!'
+                ], 404);
+            }
         });
-    }
-
-    /**
-     * @param Request $request
-     * @param Throwable $e
-     * @return JsonResponse|Response|\Symfony\Component\HttpFoundation\Response
-     * @throws Throwable
-     */
-    public function render($request, Throwable $e)
-    {
-        if ($request->is('api/*')) {
-            return response()->json([
-                'message' => 'Bad token.'
-            ], 404);
-        }
-
-        return parent::render($request, $e);
     }
 }
