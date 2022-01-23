@@ -27,7 +27,7 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    /**
+     /**
      * Register the exception handling callbacks for the application.
      *
      * @return void
@@ -35,7 +35,24 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+            return false;
         });
+    }
+
+    /**
+     * @param Request $request
+     * @param Throwable $e
+     * @return JsonResponse|Response|\Symfony\Component\HttpFoundation\Response
+     * @throws Throwable
+     */
+    public function render($request, Throwable $e)
+    {
+        if ($request->is('api/*')) {
+            return response()->json([
+                'message' => 'Bad token.'
+            ], 404);
+        }
+
+        return parent::render($request, $e);
     }
 }
