@@ -5,6 +5,7 @@ namespace App\Jobs;
 use ZipArchive;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,8 +36,9 @@ class ZipDocument implements ShouldQueue
      */
     public function handle(): void
     {
+        $user = Auth::user();
         $zip = new ZipArchive;
-        $zipResponse = $zip->open(public_path('assets/' . $this->name . '.zip'), ZipArchive::CREATE);
+        $zipResponse = $zip->open(public_path('assets/' . $user['id'] . '_' . $this->name . '.zip'), ZipArchive::CREATE);
 
         if (!!$zipResponse) {
             $zip->addFile(public_path('assets/' . $this->filePath), $this->filePath);
