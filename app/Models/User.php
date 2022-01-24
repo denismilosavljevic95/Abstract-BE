@@ -41,11 +41,25 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * READ SECTION
+     */
+    public function readOneByKeyValue($key, $value) {
+        return User::where($key, $value)->first();
+    }
+
+    public function readOneByID($id) {
+        return User::find($id);
+    }
+
     public function documents()
     {
         return $this->hasMany(Document::class);
     }
 
+    /**
+     * CREATE SECTION
+     */
     public function createUser($data) {
         $user = User::create([
             'username' => $data['username'],
@@ -58,9 +72,5 @@ class User extends Authenticatable
             'user' => $user,
             'token' => $token
         ];
-    }
-
-    public function readSingleByKeyValue($key, $value) {
-        return User::where($key, $value)->first();
     }
 }

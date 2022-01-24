@@ -23,7 +23,7 @@ class AuthService
 
         $userModel = new User();
         
-        $user = $userModel->readSingleByKeyValue($fieldType, $data['username']);
+        $user = $userModel->readOneByKeyValue($fieldType, $data['username']);
 
         if(!$user || !Hash::check($data['password'], $user->password)) {
             return [
