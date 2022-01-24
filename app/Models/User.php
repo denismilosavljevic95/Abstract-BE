@@ -45,4 +45,22 @@ class User extends Authenticatable
     {
         return $this->hasMany(Document::class);
     }
+
+    public function createUser($data) {
+        $user = User::create([
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password'])
+        ]);
+
+        $token = $user->createToken($data['password'])->plainTextToken;
+        return [
+            'user' => $user,
+            'token' => $token
+        ];
+    }
+
+    public function readSingleByKeyValue($key, $value) {
+        return User::where($key, $value)->first();
+    }
 }

@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Services\AuthService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    protected $authService;
+
+    public function __construct(AuthService $AuthService)
+    {
+        $this->authService = $AuthService;
+    }
+
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|unique:users,username',
@@ -25,18 +31,7 @@ class AuthController extends Controller
 
         $fields = $request->all();
 
-        $user = User::create([
-            'username' => $fields['username'],
-            'email' => $fields['email'],
-            'password' => bcrypt($fields['password'])
-        ]);
-
-        $token = $user->createToken($fields['password'])->plainTextToken;
-
-        $response = [
-            'user' => $user,
-            'token' => $token
-        ];
+        $response = $this->authService->register($fields);
 
         return response($response, 201);
     }
@@ -54,33 +49,12 @@ class AuthController extends Controller
         }
         $fields = $request->all();
 
-        $fieldType = filter_var($fields['username'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';  
+        $response = $this->authService->login($fields);
 
-        $user = User::where($fieldType, $fields['username'])->first();
-
-        if(!$user || !Hash::check($fields['password'], $user->password)) {
-            return response([
-                'message' => 'Bad credentials'
-            ], 401);
-        }
-
-        $token = $user->createToken($fields['password'])->plainTextToken;
-
-        $response = [
-            'user' => $user,
-            'token' => $token
-        ];
-
-        return response($response, 201);
+        return response($response['data'], $response['status']);
     }
 
     public function logout(Request $request) {
-        Auth::user()->tokens->each(function($token, $key) {
-            $token->delete();
-        });
-
-        return [
-            'message' => 'Logged out'
-        ];
+        return $this->authService->logout();
     }
 }
