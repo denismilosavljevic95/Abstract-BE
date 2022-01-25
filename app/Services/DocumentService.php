@@ -22,9 +22,7 @@ class DocumentService
         $id = Auth::user()['id'];
         $userModel = new User();
         $user = $userModel->readOneByID($id);
-        return [
-            'documents' => $user->documents
-        ];
+        return $user->documents;
     }
 
     public function download($documentID) {

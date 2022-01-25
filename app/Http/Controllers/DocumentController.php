@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helpers;
 use Illuminate\Http\Request;
 use App\Services\DocumentService;
 
 class DocumentController extends Controller
 {
     protected $documentService;
+    protected $helpers;
 
-    public function __construct(DocumentService $DocumentService)
+    public function __construct(DocumentService $DocumentService, Helpers $Helpers)
     {
         $this->documentService = $DocumentService;
+        $this->helpers = $Helpers;
     }
 
     public function readAll(Request $request) {
-        return $this->documentService->readAll();
+        $documents = $this->documentService->readAll();
+        return $this->helpers->response($documents, 200);
     }
     
     public function create(Request $request) {
@@ -24,28 +28,26 @@ class DocumentController extends Controller
 
         $response = $this->documentService->create($document, $name);
 
-        return response($response['data'], $response['status']);
+        return $this->helpers->response($response['data'], $response['status']);
     }
 
     public function readOne(Request $request) {
         $document = $this->documentService->readOne($request->get('id'));
-        return [
-            'document' => $document
-        ];
+        return $this->helpers->response($document, 200);
     }
 
     public function update(Request $request) {
         if(empty($request->input('password'))) {
-            return response([
-                'message' => 'Password cannot be empty!'
-            ], 400);
+            return $this->helpers->response(['message' => 'Password cannot be empty!'], 400);
         }
 
-        return $this->documentService->update($request->input('id'), $request->input('password'));
+        $response = $this->documentService->update($request->input('id'), $request->input('password'));
+        return $this->helpers->response($response, 200);
     }
 
     public function delete(Request $request) {
-        return $this->documentService->delete($request->get('id'));
+        $response = $this->documentService->delete($request->get('id'));
+        return $this->helpers->response($response, 200);
     }
 
     public function download(Request $request) {

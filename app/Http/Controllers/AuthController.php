@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Helpers;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     protected $authService;
+    protected $helpers;
 
-    public function __construct(AuthService $AuthService)
+    public function __construct(AuthService $AuthService, Helpers $Helpers)
     {
         $this->authService = $AuthService;
+        $this->helpers = $Helpers;
     }
 
     public function register(Request $request) {
@@ -24,16 +26,14 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response([
-                'message' => 'Not correct inputs'
-            ], 400);
+            return $this->helpers->response(['message' => 'Not correct inputs'], 400);
         }
 
         $fields = $request->all();
 
         $response = $this->authService->register($fields);
 
-        return response($response, 201);
+        return $this->helpers->response($response, 201);
     }
 
     public function login(Request $request) {
@@ -43,18 +43,17 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response([
-                'message' => 'Not correct inputs'
-            ], 400);
+            return $this->helpers->response(['message' => 'Not correct inputs'], 400);
         }
         $fields = $request->all();
 
         $response = $this->authService->login($fields);
 
-        return response($response['data'], $response['status']);
+        return $this->helpers->response($response['data'], $response['status']);
     }
 
     public function logout(Request $request) {
-        return $this->authService->logout();
+        $response = $this->authService->logout();
+        return $this->helpers->response($response, 200);
     }
 }
